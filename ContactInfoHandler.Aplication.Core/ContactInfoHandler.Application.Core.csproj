@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Mapper\Configuration\DtoMapperConfigurator.cs~RF301c2c7d.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ContactInfoHandler.Application.Dto\ContactInfoHandler.Application.Dto.csproj" />
+    <ProjectReference Include="..\ContactInfoHandler.Infrastructure.Data.Persistence.Core\ContactInfoHandler.Infrastructure.Data.Persistence.Core.csproj" />
+  </ItemGroup>
+
+</Project>
