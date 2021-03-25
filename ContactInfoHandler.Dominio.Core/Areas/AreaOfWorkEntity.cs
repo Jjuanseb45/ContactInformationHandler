@@ -16,5 +16,8 @@ namespace ContactInfoHandler.Dominio.Core.Areas
         public EmployeeEntity Reponsable { get; set; }
         public string AreaName { get; set; }
         public IEnumerable<EmployeeEntity> AreaEmployees { get; set; }
+
+        //RELACION CON EL EMPLEADO REPONSABLE
+        public Guid ResponsableEmployeeId { get; set; }
     }
 }
