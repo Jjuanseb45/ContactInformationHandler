@@ -56,16 +56,18 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.AreaService
 
             Assert.True(AreaService.DeleteArea(new AreaOfWorkDto { }).Result);
         }
-        
+
         [Fact]
         [UnitTest]
         public void InsertAlreadyExistingArea()
         {
-            var areaMock = new Mock<IAreaOfWorkRepository>();            
-            IEnumerable<AreaOfWorkEntity> areas = new List<AreaOfWorkEntity>();
-            areaMock.Setup(x => x.SearchMatching(It.IsAny<Expression<Func<AreaOfWorkEntity, bool>>>()))
-                .Returns(() => Task.FromResult(areas));
+            var areaMock = new Mock<IAreaOfWorkRepository>();
 
+            var areas = new List<AreaOfWorkEntity>();
+            areas.Add(new AreaOfWorkEntity { AreaName = "Any Name" });
+            IEnumerable<AreaOfWorkEntity> areasEnum = areas;
+            areaMock.Setup(x => x.SearchMatching(It.IsAny<Expression<Func<AreaOfWorkEntity, bool>>>()))
+            .Returns(() => Task.FromResult(areasEnum));
             var service = new ServiceCollection();
             service.AddTransient(_ => areaMock.Object);
             service.ConfigureAreaOfWork(new DbSettings());
@@ -77,12 +79,14 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.AreaService
 
         [Fact]
         [UnitTest]
-        public void InsertNoExistingArea()
+        public void SucesfullInsertNoExistingArea()
         {
 
             var areaMock = new Mock<IAreaOfWorkRepository>();
-            areaMock.Setup(x => x.GetOne(It.IsAny<Expression<Func<AreaOfWorkEntity, bool>>>()))
-                .Returns(()=>Task.FromResult(new AreaOfWorkEntity {}));
+            var areas = new List<AreaOfWorkEntity>();
+            IEnumerable<AreaOfWorkEntity> areasEnum = areas;
+            areaMock.Setup(x => x.SearchMatching(It.IsAny<Expression<Func<AreaOfWorkEntity, bool>>>()))
+                .Returns(()=>Task.FromResult(areasEnum));
 
             var service = new ServiceCollection();
             service.AddTransient(_ => areaMock.Object);
@@ -90,7 +94,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.AreaService
             var provider = service.BuildServiceProvider();
             var AreaService = provider.GetRequiredService<IAreaOfWorkService>();
 
-            Assert.True(AreaService.InsertArea(new AreaOfWorkDto { }).Result);
+            Assert.True(AreaService.InsertArea(new AreaOfWorkDto { ResponsableEmployeeId = new Guid()}).Result);
         }
 
         [Fact]
@@ -109,23 +113,117 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.AreaService
             var AreaService = provider.GetRequiredService<IAreaOfWorkService>();
             await Assert.ThrowsAsync<ArgumentException>(() => AreaService.GetAreas());
         }    
-        /*
+        
         [Fact]
         [UnitTest]
-        public async Task CheckSuccesfullUpdateArea()
+        public async Task SuccesfullUpdateArea()
         {
             var areaMock = new Mock<IAreaOfWorkRepository>();
-            areaMock.Setup(x => x.Update<AreaOfWorkEntity>(It.IsAny<AreaOfWorkEntity>()))
-                .Returns(()=> Task.FromResult(true));
+            areaMock.Setup(x => x.GetOne<AreaOfWorkEntity>(It.IsAny<Expression<Func<AreaOfWorkEntity, bool>>>()))
+                .Returns(()=> Task.FromResult(new AreaOfWorkEntity { }));
+
             var service = new ServiceCollection();
             service.AddTransient(_ => areaMock.Object);
             service.ConfigureAreaOfWork(new DbSettings());
             var provider = service.BuildServiceProvider();
             var AreaService = provider.GetRequiredService<IAreaOfWorkService>();
-            await Assert.True(AreaService.UpdateArea(new AreaOfWorkDto { }).Result);
-        } 
-        */
+            Assert.True(AreaService.UpdateArea(new AreaOfWorkDto {AreaName="A" }, new Guid()).Result);
+        }
 
+
+        [Fact]
+        [IntegrationTest]    
+        public async Task SuccesfullInsert()
+        {
+            var service = new ServiceCollection();
+            service.ConfigureAreaOfWork(new DbSettings
+            {
+                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
+            });
+            var provider = service.BuildServiceProvider();
+            var AreaOfWorkService = provider.GetRequiredService<IAreaOfWorkService>();
+            var ReponsableId = new Guid("dc29cca5-e978-4f54-a177-5b935820e9f7");
+            var AreaId = new Guid("DBFE49F6-BB24-4B75-4516-08D8F01092A6");
+            var response = await AreaOfWorkService.InsertArea(new AreaOfWorkDto
+            {
+                AreaId = AreaId,
+                AreaName= "Economia",
+                ResponsableEmployeeId = ReponsableId,
+            });
+            Assert.True(response);
+        }
+
+        [Fact]
+        [IntegrationTest]
+        public async Task FailInsertNoResponsable()
+        {
+            var service = new ServiceCollection();
+            service.ConfigureAreaOfWork(new DbSettings
+            {
+                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
+            });
+            var provider = service.BuildServiceProvider();
+            var AreaOfWorkService = provider.GetRequiredService<IAreaOfWorkService>();
+            var ReponsableId = new Guid("dc29cca5-e978-4f54-a177-5b935820e9f7");
+            var AreaId = new Guid("a720d6b6-d84f-476e-a95a-754f9ba078b9");
+            var response = await AreaOfWorkService.InsertArea(new AreaOfWorkDto
+            {
+                AreaId = AreaId,
+                AreaName = "Economia",
+            });
+            Assert.False(response);
+        }      
+
+        [Fact]
+        [IntegrationTest]    
+        public async Task FailAlreadyExistingAreafullInsert()
+        {
+            var service = new ServiceCollection();
+            service.ConfigureAreaOfWork(new DbSettings
+            {
+                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
+            });
+            var provider = service.BuildServiceProvider();
+            var AreaOfWorkService = provider.GetRequiredService<IAreaOfWorkService>();
+            var ReponsableId = new Guid("dc29cca5-e978-4f54-a177-5b935820e9f7");
+            var AreaId = new Guid("DBFE49F6-BB24-4B75-4516-08D8F01092E1");
+            var response = await AreaOfWorkService.InsertArea(new AreaOfWorkDto
+            {
+                AreaId = AreaId,
+                AreaName= "Finanzas",
+                ResponsableEmployeeId = ReponsableId,
+            });
+            Assert.False(response);
+        }
+
+        /*
+        [Fact]
+        [IntegrationTest]
+        public async Task SuccesfulDetelete()
+        {
+            var service = new ServiceCollection();
+            service.ConfigureAreaOfWork(new DbSettings
+            {
+                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
+            });
+            var provider = service.BuildServiceProvider();
+            var AreaOfWorkService = provider.GetRequiredService<IAreaOfWorkService>();
+
+            var ReponsableId = new Guid("dc29cca5-e978-4f54-a177-5b935820e9f7");
+            var AreaId = new Guid("DBFE49F6-BB24-4B75-4516-08D8F01092E1");
+            var response = await AreaOfWorkService.DeleteArea(new AreaOfWorkDto
+            {
+                AreaId = AreaId,
+                ResponsableEmployeeId = ReponsableId,
+                Reponsable = new EmployeeEntity { AreaId = AreaId },
+                AreaName = "Finanzas",
+                
+            });
+            Assert.True(response);
+        }
+
+
+        */
 
     }
 }

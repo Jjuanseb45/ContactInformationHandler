@@ -5,9 +5,6 @@ using ContactInfoHandler.Application.Core.Persons.Providers.Service;
 using ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ContactInfoHandler.Application.Core.Persons.Configuration
 {

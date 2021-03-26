@@ -18,28 +18,31 @@ namespace ContactInfoHandler.Application.Core.Areas.Service
         public async Task<bool> DeleteArea(AreaOfWorkDto area)
         {
             var AreaToDelete = await _repo.GetOne<AreaOfWorkEntity>(x => x.AreaId == area.AreaId).ConfigureAwait(false);
-            if (AreaToDelete.AreaEmployees.ToArray().Length < 1)
+            var numberOfEmployees = AreaToDelete.AreaEmployees.Count();
+            if (numberOfEmployees <= 0 )
             {
                 await _repo.Delete<AreaOfWorkEntity>(AreaToDelete);
                 return true;
-            }
-            else
-            {
+            }           
                 return false;
-                throw new ArgumentException("El area tiene un empleado participante, no se puede eliminar");
-            }
+                throw new ArgumentException("El area tiene un empleado participante, no se puede eliminar");            
         }
 
 
         public async Task<bool> InsertArea(AreaOfWorkDto area)
         {
-            var AreaToInsert = _repo.SearchMatching<AreaOfWorkEntity>(x => x.AreaId == area.AreaId).Result.Any();
+            var areaA = _repo.SearchMatching<AreaOfWorkEntity>(x => x.AreaId == area.AreaId);
+            var areas = areaA.Result;
+            var AreaToInsert = areaA.Result.Any();
             if (AreaToInsert)
             {
                 return false;
             }
-            ValidateNotNullArguments(area.AreaName);
-            await _repo.Insert(new AreaOfWorkEntity { AreaId = new Guid(), AreaEmployees = area.AreaEmployees, AreaName = area.AreaName, Reponsable = area.Reponsable });
+            if (area.ResponsableEmployeeId == default) 
+            {
+                return false;
+            }
+            await _repo.Insert(new AreaOfWorkEntity { AreaId = area.AreaId, AreaEmployees = area.AreaEmployees, AreaName = area.AreaName, Reponsable = area.Reponsable, ResponsableEmployeeId= area.ResponsableEmployeeId });
             return true;
 
         }
@@ -61,11 +64,13 @@ namespace ContactInfoHandler.Application.Core.Areas.Service
             entityToUpdate.Reponsable = area.Reponsable;
             entityToUpdate.AreaEmployees = area.AreaEmployees;
 
-            return await _repo.Update(entityToUpdate);
+            await _repo.Update(entityToUpdate);
+
+            return true;
         }
 
         public void ValidateNotNullArguments(Object o) {
-            if (o == null) throw new ArgumentNullException("El capo faltante es obligatorio");
+            if (o == null || o== default) throw new ArgumentNullException("El capo faltante es obligatorio");
         }
     }
 }

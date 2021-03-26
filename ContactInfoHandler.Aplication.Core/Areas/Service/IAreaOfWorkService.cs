@@ -1,7 +1,6 @@
 ﻿using ContactInfoHandler.Application.Dto.Areas;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ContactInfoHandler.Application.Core.Areas.Service

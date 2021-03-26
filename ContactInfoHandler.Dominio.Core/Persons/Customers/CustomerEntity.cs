@@ -9,7 +9,7 @@ namespace ContactInfoHandler.Dominio.Core.Persons.Customers
     public class CustomerEntity:BasePersonEntity
     {
         [Key]
-        public Guid IdProvider { get; set; }
+        public Guid IdCustmer { get; set; }
         [Required]
         public string FavoriteBrand { get; set; }
         //RELACION CON TIPO DE IDENTIFICACION

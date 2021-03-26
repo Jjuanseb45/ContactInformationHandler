@@ -8,7 +8,7 @@ namespace ContactInfoHandler.Dominio.Core.Persons.Employees
     public class EmployeeEntity: BasePersonEntity
     {
         [Key]
-        public Guid IdProvider { get; set; }
+        public Guid IdEmployee { get; set; }
         public Guid EmployeeCode { get; set; }
         public override KindOfPerson KindOfPerson => KindOfPerson.Natural;
         public WorkPosition WorkPosition { get;  set; }

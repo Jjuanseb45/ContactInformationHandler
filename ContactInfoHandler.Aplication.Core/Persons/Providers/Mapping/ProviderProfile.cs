@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using AutoMapper;
+using ContactInfoHandler.Application.Dto.Persons.Providers;
+using ContactInfoHandler.Dominio.Core.Persons.Providers;
 
 namespace ContactInfoHandler.Application.Core.Persons.Providers.Mapping
 {
-    class ProviderProfile
+    class ProviderProfile:Profile
     {
+        public ProviderProfile()
+        {
+            CreateMap<ProviderEntity, ProviderDto>().ReverseMap();
+
+        }
+
     }
 }

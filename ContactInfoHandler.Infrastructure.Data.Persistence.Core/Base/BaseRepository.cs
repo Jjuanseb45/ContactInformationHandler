@@ -44,7 +44,7 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base
         }
 
         public async Task<IEnumerable<T>> SearchMatching<T>(Expression<Func<T, bool>> response) where T : BaseEntity=> 
-            await Task.FromResult(_unidadDeTrabajo.Set<T>().Where(response));        
+            await Task.FromResult(_unidadDeTrabajo.Set<T>().Where(response));
 
         public async Task<bool> Update<T>(T entidad) where T : BaseEntity
         {
@@ -54,10 +54,11 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base
                 _unidadDeTrabajo.Commit();
                 return await Task.FromResult(true);
             }
-            catch 
+            catch (Exception exc)
             {
                 return await Task.FromResult(false);
             }
+          
         }
     }
 }
