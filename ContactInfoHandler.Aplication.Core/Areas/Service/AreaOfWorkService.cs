@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using ContactInfoHandler.Application.Core.Base.Exceptions;
 using ContactInfoHandler.Application.Dto.Areas;
 using ContactInfoHandler.Dominio.Core.Areas;
+using ContactInfoHandler.Dominio.Core.Persons.Employees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,43 +10,54 @@ using System.Threading.Tasks;
 
 namespace ContactInfoHandler.Application.Core.Areas.Service
 {
-    class AreaOfWorkService : IAreaOfWorkService
+    internal class AreaOfWorkService : IAreaOfWorkService
     {
-        IAreaOfWorkRepository _repo;
+        private readonly IAreaOfWorkRepository _repo;
+        private readonly IEmployeeRepository _repoEmployees;
         IMapper Mapper;
 
-        public AreaOfWorkService(IAreaOfWorkRepository areaRepo, IMapper _mapper) { _repo = areaRepo; Mapper = _mapper; }
+        public AreaOfWorkService(IAreaOfWorkRepository areaRepo, IMapper _mapper, IEmployeeRepository repoEmployees) { _repo = areaRepo; Mapper = _mapper; _repoEmployees = repoEmployees; }
 
         public async Task<bool> DeleteArea(AreaOfWorkDto area)
         {
-            var AreaToDelete = await _repo.GetOne<AreaOfWorkEntity>(x => x.AreaId == area.AreaId).ConfigureAwait(false);
-            var numberOfEmployees = AreaToDelete.AreaEmployees.Count();
-            if (numberOfEmployees <= 0 )
+            try
             {
-                await _repo.Delete<AreaOfWorkEntity>(AreaToDelete);
-                return true;
-            }           
+                var AreaToDelete = await _repo.GetOne<AreaOfWorkEntity>(x => x.AreaId == area.AreaId).ConfigureAwait(false);
+                if (AreaToDelete != null)
+                {
+                    var employees = await _repoEmployees.SearchMatching<EmployeeEntity>(x => x.AreaId == area.AreaId).ConfigureAwait(false);
+                    if (!employees.Any())
+                    {
+                        await _repo.Delete<AreaOfWorkEntity>(AreaToDelete);
+                        return true;
+                    }
+                    return false;
+
+                }
                 return false;
-                throw new ArgumentException("El area tiene un empleado participante, no se puede eliminar");            
+            }
+            catch (Exception exce)
+            {
+                return false;
+            }
         }
 
 
         public async Task<bool> InsertArea(AreaOfWorkDto area)
         {
-            var areaA = _repo.SearchMatching<AreaOfWorkEntity>(x => x.AreaId == area.AreaId);
-            var areas = areaA.Result;
-            var AreaToInsert = areaA.Result.Any();
-            if (AreaToInsert)
-            {
-                return false;
-            }
-            if (area.ResponsableEmployeeId == default) 
-            {
-                return false;
-            }
-            await _repo.Insert(new AreaOfWorkEntity { AreaId = area.AreaId, AreaEmployees = area.AreaEmployees, AreaName = area.AreaName, Reponsable = area.Reponsable, ResponsableEmployeeId= area.ResponsableEmployeeId });
-            return true;
 
+            var areaA = await _repo.SearchMatching<AreaOfWorkEntity>(x => x.AreaId == area.AreaId);
+
+            if (areaA.Any())
+            {
+                throw new AlreadyExistingAreaException("El area que intenta insertar ya existe");
+            }
+            if (area.ResponsableEmployeeId != default)
+            {
+                await _repo.Insert(Mapper.Map<AreaOfWorkEntity>(area)).ConfigureAwait(false);
+                return true;
+            }
+            throw new NoAreaHandlerEspecifiedException("El area debe tener una persona encargada");
         }
 
         public async Task<IEnumerable<AreaOfWorkDto>> GetAreas()
@@ -57,20 +70,30 @@ namespace ContactInfoHandler.Application.Core.Areas.Service
             return Mapper.Map<IEnumerable<AreaOfWorkDto>>(response);
         }
 
-        public async Task<bool> UpdateArea(AreaOfWorkDto area, Guid areaId)
+
+        public async Task<bool> UpdateArea(AreaOfWorkDto areaDto)
         {
-            var entityToUpdate = await _repo.GetOne<AreaOfWorkEntity>(x => x.AreaId == areaId).ConfigureAwait(false);
-            entityToUpdate.AreaName = area.AreaName;
-            entityToUpdate.Reponsable = area.Reponsable;
-            entityToUpdate.AreaEmployees = area.AreaEmployees;
+            var AreaExist = await _repo.SearchMatching<AreaOfWorkEntity>(x => x.AreaId == areaDto.AreaId);
+            if (!AreaExist.Any()) return false;
 
-            await _repo.Update(entityToUpdate);
-
-            return true;
+            var AreaToUpdate = AreaExist.FirstOrDefault();
+                if (areaDto.AreaName != null || areaDto.AreaName != default) { AreaToUpdate.AreaName = areaDto.AreaName; } else { AreaToUpdate.AreaName = AreaToUpdate.AreaName; }
+                if (areaDto.ResponsableEmployeeId != default) { AreaToUpdate.ResponsableEmployeeId = areaDto.ResponsableEmployeeId; } else { AreaToUpdate.ResponsableEmployeeId = AreaToUpdate.ResponsableEmployeeId; }
+                await _repo.Update(AreaToUpdate);
+                return true;            
         }
 
-        public void ValidateNotNullArguments(Object o) {
-            if (o == null || o== default) throw new ArgumentNullException("El capo faltante es obligatorio");
+        public async Task<AreaOfWorkDto> GetOne(AreaOfWorkDto areaOfWorkDto)
+        {
+            var areaEntity = await _repo.GetOne<AreaOfWorkEntity>(x => x.AreaName == areaOfWorkDto.AreaName).ConfigureAwait(false);
+            return Mapper.Map<AreaOfWorkDto>(areaEntity);
+
         }
+
+        public void ValidateNotNullArguments(Object o)
+        {
+            if (o == null || o == default) throw new ArgumentNullException("El capo faltante es obligatorio");
+        }
+
     }
 }

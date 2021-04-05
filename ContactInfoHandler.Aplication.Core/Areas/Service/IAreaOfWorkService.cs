@@ -10,6 +10,8 @@ namespace ContactInfoHandler.Application.Core.Areas.Service
         public Task<bool> DeleteArea(AreaOfWorkDto area);
         public Task<bool> InsertArea(AreaOfWorkDto area);
         public Task<IEnumerable<AreaOfWorkDto>> GetAreas();
-        public Task<bool> UpdateArea(AreaOfWorkDto area, Guid areaId);
+        public Task<bool> UpdateArea(AreaOfWorkDto area);
+
+        public Task<AreaOfWorkDto> GetOne(AreaOfWorkDto areaOfWorkDto);       
     }
 }

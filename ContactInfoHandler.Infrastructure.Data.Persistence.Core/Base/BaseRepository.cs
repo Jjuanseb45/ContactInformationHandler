@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base
 {
-    public class BaseRepository<TGeneric> : IBaseRepository<TGeneric> where TGeneric : BaseEntity
+    internal abstract class BaseRepository<TGeneric> : IBaseRepository<TGeneric> where TGeneric : BaseEntity
     {
         private readonly IUnitOfWork _unidadDeTrabajo;
         public IUnitOfWork _unitOfWork => _unidadDeTrabajo;
@@ -33,7 +33,7 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base
 
         public async Task<T> GetOne<T>(Expression<Func<T, bool>> response) where T : BaseEntity
         {
-            return await Task.FromResult(_unidadDeTrabajo.Set<T>().First(response));
+            return await Task.FromResult(_unidadDeTrabajo.Set<T>().FirstOrDefault(response));
         }
 
         public async Task<T> Insert<T>(T entidad) where T : BaseEntity

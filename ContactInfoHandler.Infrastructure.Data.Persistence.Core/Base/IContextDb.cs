@@ -6,8 +6,6 @@ using ContactInfoHandler.Dominio.Core.Persons.Employees;
 using ContactInfoHandler.Dominio.Core.Persons.Providers;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base
 {

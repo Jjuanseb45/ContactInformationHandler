@@ -1,8 +1,6 @@
 ﻿using ContactInfoHandler.Dominio.Core.Identifications;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace ContactInfoHandler.Dominio.Core.Persons.Providers
 {
@@ -17,6 +15,5 @@ namespace ContactInfoHandler.Dominio.Core.Persons.Providers
 
         //RELACION CON TIPO DE IDENTIFICACION
         public Guid KindOfIdentificationId { get; set; }
-        public KindOfIdentificationEntity KindOfIdentification { get; set; }
     }
 }

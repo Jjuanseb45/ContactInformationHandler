@@ -1,4 +1,5 @@
-﻿using ContactInfoHandler.Dominio.Core.Areas;
+﻿using ContactInfoHandler.Application.Dto.Identifications;
+using ContactInfoHandler.Dominio.Core.Areas;
 using ContactInfoHandler.Dominio.Core.Identifications;
 using ContactInfoHandler.Dominio.Core.Persons;
 using ContactInfoHandler.Dominio.Core.Persons.Employees;
@@ -10,17 +11,13 @@ namespace ContactInfoHandler.Application.Dto.Persons.Employees
     {
         public Guid IdEmployee { get; set; }
         public Guid EmployeeCode { get; set; }
-        public override KindOfPerson KindOfPerson => KindOfPerson.Natural;
-        public WorkPosition WorkPosition { get; set; }
         public double Salary { get; set; }
-
+        //public override string KindOfPerson => "Natural";
         //RELACION CON EL AREA
         public Guid AreaId { get; set; }
-        public AreaOfWorkEntity AreaOfWork { get; set; }
 
         //RELACION CON TIPO DE IDENTIFICACION
         public Guid KindOfIdentificationId { get; set; }
-        public KindOfIdentificationEntity KindOfIdentification { get; set; }
     }
 
 }

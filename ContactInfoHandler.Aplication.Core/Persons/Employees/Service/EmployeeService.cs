@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using ContactInfoHandler.Application.Core.Base.Exceptions;
 using ContactInfoHandler.Application.Dto.Persons.Employees;
-using ContactInfoHandler.Dominio.Core.Persons;
+using ContactInfoHandler.Dominio.Core.Identifications;
 using ContactInfoHandler.Dominio.Core.Persons.Employees;
 using System;
 using System.Collections.Generic;
@@ -9,78 +10,79 @@ using System.Threading.Tasks;
 
 namespace ContactInfoHandler.Application.Core.Persons.Employees.Service
 {
-    public class EmployeeService : IEmployeeService
+    internal class EmployeeService : BaseService, IEmployeeService
     {
-        IEmployeeRepository _employeeRepo;
-        IMapper Mapper;
-        public EmployeeService(IEmployeeRepository _employeeRepo, IMapper Mapper) => this._employeeRepo = _employeeRepo;
+        private readonly IEmployeeRepository _employeeRepo;
+        private readonly IKindOfIdentificationRepository _KindOfIdRepo;
+        private readonly IMapper _mapper;
 
-        public void AceptanceCriteries(EmployeeDto employee)
+        public EmployeeService(IEmployeeRepository EmployeeRepo, IMapper Mapper, IKindOfIdentificationRepository KindOfIdRepo) { _mapper = Mapper; _employeeRepo = EmployeeRepo; _KindOfIdRepo = KindOfIdRepo; }
+
+        public void AceptanceCriteriesForInsert(EmployeeDto employee)
         {
-            var ExistingSameKindIdAndIdNumber = _employeeRepo.SearchMatching<EmployeeEntity>(x => x.IdNumber == employee.IdNumber && x.KindOfIdentification.KindOfIdentificationId == employee.KindOfIdentification.KindOfIdentificationId).Result.Any();
-            var ExistingSameNameAndKindOfPerson = _employeeRepo.SearchMatching<EmployeeEntity>(x => x.KindOfPerson == employee.KindOfPerson && x.FirstName == employee.FirstLastName && x.SecondName == employee.SecondName && x.FirstLastName == employee.FirstLastName && x.SecondLastName ==employee.SecondLastName).Result.Any();
-            if (ExistingSameKindIdAndIdNumber || ExistingSameNameAndKindOfPerson)
-            {
-                throw new ArgumentException("Ya existe una entidad con parametros similares");
-            }
-            if (employee.SignUpDate == default || employee.DateOfBirth == default)
-            {
-                throw new ArgumentException("Por favor ingrese la fecha de nacimiento");
-            }
-            if (employee.KindOfIdentification.IdentificationName == "NIT")
-            {
-                throw new ArgumentException("Su tipo de identidad no puede ser NIT");
-            }
-            if (employee.KindOfPerson == KindOfPerson.Juridica)
-            {
-                throw new ArgumentException("Un empleado no puede ser juridico");
-            }
+            var NitEntity = _KindOfIdRepo.GetOne<KindOfIdentificationEntity>(x => x.IdentificationName == "Nit").Result;
+
+            var ExistingSameNameAndKindOfPerson = _employeeRepo.SearchMatching<EmployeeEntity>(x => x.KindOfPerson == employee.KindOfPerson && x.FirstName + x.SecondName + x.FirstLastName + x.SecondLastName == employee.FirstName + employee.SecondName + employee.FirstLastName + employee.SecondLastName).Result.Any();
+            var ExistingSameKindIdAndIdNumber = _employeeRepo.SearchMatching<EmployeeEntity>(x => x.IdNumber == employee.IdNumber && x.KindOfIdentificationId == employee.KindOfIdentificationId).Result.Any();
+            var ExistingEmployeeCode = _employeeRepo.SearchMatching<EmployeeEntity>(x => x.EmployeeCode == employee.EmployeeCode).Result.Any();
+
+            if (ExistingSameKindIdAndIdNumber) { throw new PersonWithSameParametersExistingException("Ya existe una persona con el mismo numero y tipo de identificación"); }
+            if (ExistingEmployeeCode) { throw new AlreadyExistingEmployeeCodeException("Ya existe un empleado con el mismo codigo"); }
+            if (ExistingSameNameAndKindOfPerson) { throw new PersonWithSameParametersExistingException("Ya existe una persona con el mismo nombre y razon social"); }
+            if (employee.SignUpDate == default) { throw new SignUpDateMissingException("Por favor ingrese la fecha de creación"); }
+            if (employee.DateOfBirth == default) { throw new DateOfBirthMissingException("Por favor ingrese la fecha de nacimiento"); }
+            if (employee.KindOfIdentificationId == NitEntity.KindOfIdentificationId) { throw new EmployeeWithNitException("El tipo de identificacion de una persona no puede ser Nit"); }
+            if (employee.KindOfPerson == "Juridica") { throw new JuridicEmployeeException("Un empleado no puede ser juridico"); }
         }
 
         public async Task<bool> InsertEmployee(EmployeeDto employee)
         {
-            AceptanceCriteries(employee);
-
-            try
+            if (employee.KindOfPerson != null)
             {
-                await _employeeRepo.Insert(new EmployeeEntity
+                switch (employee.KindOfPerson.ToUpper())
                 {
-                    IdEmployee = new Guid(),
-                    EmployeeCode = employee.EmployeeCode,
-                    WorkPosition = employee.WorkPosition,
-                    SignUpDate = DateTimeOffset.Now,
-                    DateOfBirth = employee.DateOfBirth,
-                    AreaId = employee.AreaId,
-                    IdNumber = employee.IdNumber,
-                    AreaOfWork = employee.AreaOfWork,
-                    KindOfPerson = employee.KindOfPerson,
-                    KindOfIdentificationId = employee.KindOfIdentificationId,
-                    FirstName = employee.FirstName,
-                    SecondName = employee.SecondName,
-                    FirstLastName = employee.FirstLastName,
-                    SecondLastName = employee.SecondLastName,
-                    Salary = employee.Salary,
-                }).ConfigureAwait(false);
-                return true;
+                    case "JURIDICA": throw new JuridicEmployeeException("Un empleado no puede ser juridico, por favor revise la entrada");
+                }
             }
-            catch {
-                return false;
+
+            BaseService.ValidateKindOfPerson(employee);
+
+            AceptanceCriteriesForInsert(employee);
+            if (employee.EmployeeCode != default)
+            {
+                if (employee.AreaId != default)
+                {
+                    try
+                    {
+                        await _employeeRepo.Insert(_mapper.Map<EmployeeEntity>(employee)).ConfigureAwait(false);
+                        return true;
+                    }
+                    catch
+                    {
+                        throw new AlreadyExistingEmployeeException("Ya existe el empleado que esta intentando ingresar");
+                    }
+                }
+                throw new NoAreaEspecifiedException("El empleado ingresado debe tener un area");
             }
+            throw new NoEspecifiedEmployeeCodeException("El empleado debe tener un codigo unico e irrepetible");
         }
 
         public async Task<bool> DeleteEmployee(EmployeeDto employee)
         {
             var EmployeeToDelete = await _employeeRepo.GetOne<EmployeeEntity>(x => x.IdEmployee == employee.IdEmployee).ConfigureAwait(false);
-            try
+            if (EmployeeToDelete != null)
             {
-                await _employeeRepo.Delete(EmployeeToDelete);
-                return true;
+                try
+                {
+                    await _employeeRepo.Delete(EmployeeToDelete);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
-            catch
-            {
-                return false;
-                throw new ArgumentException("No se eliminó la entidad");
-            }
+            throw new NoExistingEmployee("El empleado que intenta eliminar no se encuentra registrado");
         }
 
         public async Task<IEnumerable<EmployeeDto>> GetEmployees()
@@ -88,33 +90,58 @@ namespace ContactInfoHandler.Application.Core.Persons.Employees.Service
             var response = await _employeeRepo.GetAll<EmployeeEntity>().ConfigureAwait(false);
             if (response.ToArray().Length < 1)
             {
-                throw new ArgumentException("No existen Areas");
+                throw new NoExistingEmployeesRegisteredException("No existen empleados registrados");
             }
-            return Mapper.Map<IEnumerable<EmployeeDto>>(response);
+            return _mapper.Map<IEnumerable<EmployeeDto>>(response);
         }
 
-        public async Task<bool> UpdateEmployee(EmployeeDto employee, Guid employeeId)
+
+        public async Task<bool> UpdateEmployee(EmployeeDto employeeDto)
         {
-            var entityToUpdate = await _employeeRepo.GetOne<EmployeeEntity>(x => x.IdEmployee == employeeId).ConfigureAwait(false);
-            entityToUpdate.IdEmployee = new Guid();
-            entityToUpdate.EmployeeCode = employee.EmployeeCode;
-            entityToUpdate.WorkPosition = employee.WorkPosition;
-            entityToUpdate.SignUpDate = DateTimeOffset.Now;
-            entityToUpdate.DateOfBirth = employee.DateOfBirth;
-            entityToUpdate.AreaId = employee.AreaId;
-            entityToUpdate.IdNumber = employee.IdNumber;
-            entityToUpdate.AreaOfWork = employee.AreaOfWork;
-            entityToUpdate.KindOfPerson = KindOfPerson.Natural;
-            entityToUpdate.KindOfIdentification = employee.KindOfIdentification;
-            entityToUpdate.KindOfIdentificationId = employee.KindOfIdentificationId;
-            entityToUpdate.FirstName = employee.FirstName;
-            entityToUpdate.SecondName = employee.SecondName;
-            entityToUpdate.FirstLastName = employee.FirstLastName;
-            entityToUpdate.SecondLastName = employee.SecondLastName;
-            entityToUpdate.Salary = employee.Salary;
-            //AceptanceCriteries(Mapper.Map<ProviderDto>(entityToUpdate));
-            await _employeeRepo.Update(entityToUpdate);
+            if (employeeDto.KindOfPerson != null)
+            {
+                if (employeeDto.KindOfPerson.ToUpper() != "JURIDICA" && employeeDto.KindOfPerson.ToUpper() != "NATURAL")
+                {
+                    throw new InvalidKindOfPerson("La razón social solo puede ser Juridica o Natural");
+                }
+            }
+
+            var EmployeeExists = await _employeeRepo.SearchMatching<EmployeeEntity>(x => x.IdEmployee == employeeDto.IdEmployee);
+            if (!EmployeeExists.Any()) throw new NoExistingEmployee("El empleado que intenta actualizar no se encuentra registrado");
+
+            var EmployeeToUpdate = EmployeeExists.FirstOrDefault();
+
+            EmployeeToUpdate.IdNumber = employeeDto.IdNumber;
+            EmployeeToUpdate.KindOfIdentificationId = employeeDto.KindOfIdentificationId;
+            EmployeeToUpdate.KindOfPerson = employeeDto.KindOfPerson;
+            EmployeeToUpdate.FirstName = employeeDto.FirstName;
+            EmployeeToUpdate.SecondName = employeeDto.SecondName;
+            EmployeeToUpdate.FirstLastName = employeeDto.FirstLastName;
+            EmployeeToUpdate.SecondLastName = employeeDto.SecondLastName;
+            EmployeeToUpdate.DateOfBirth = employeeDto.DateOfBirth;
+            EmployeeToUpdate.SignUpDate = employeeDto.SignUpDate;
+            EmployeeToUpdate.Salary = employeeDto.Salary;
+            EmployeeToUpdate.EmployeeCode = employeeDto.EmployeeCode;
+            EmployeeToUpdate.IdEmployee = employeeDto.IdEmployee;
+
+            await _employeeRepo.Update(EmployeeToUpdate);
             return true;
+
+            /*
+            if (employeeDto.IdNumber != default) { EmployeeToUpdate.IdNumber = employeeDto.IdNumber; } else { EmployeeToUpdate.IdNumber = EmployeeToUpdate.IdNumber; }
+            if (employeeDto.KindOfIdentificationId != default) { EmployeeToUpdate.KindOfIdentificationId = employeeDto.KindOfIdentificationId; } else { EmployeeToUpdate.KindOfIdentificationId = EmployeeToUpdate.KindOfIdentificationId; }
+            if (employeeDto.KindOfPerson != default) { EmployeeToUpdate.KindOfPerson = employeeDto.KindOfPerson; } else { EmployeeToUpdate.KindOfPerson = EmployeeToUpdate.KindOfPerson; }
+            if (employeeDto.FirstName != null) { EmployeeToUpdate.FirstName = employeeDto.FirstName; } else { EmployeeToUpdate.FirstName = EmployeeToUpdate.FirstName; }
+            if (employeeDto.SecondName != null) { EmployeeToUpdate.SecondName = employeeDto.SecondName; } else { EmployeeToUpdate.SecondName = EmployeeToUpdate.SecondName; }
+            if (employeeDto.FirstLastName != null) { EmployeeToUpdate.FirstLastName = employeeDto.FirstLastName; } else { EmployeeToUpdate.FirstLastName = EmployeeToUpdate.FirstLastName; }
+            if (employeeDto.SecondLastName != null) { EmployeeToUpdate.SecondLastName = employeeDto.SecondLastName; } else { EmployeeToUpdate.SecondLastName = EmployeeToUpdate.SecondLastName; }
+            if (employeeDto.DateOfBirth != default) { EmployeeToUpdate.DateOfBirth = employeeDto.DateOfBirth; } else { EmployeeToUpdate.DateOfBirth = EmployeeToUpdate.DateOfBirth; }
+            if (employeeDto.SignUpDate != default) { EmployeeToUpdate.SignUpDate = employeeDto.SignUpDate; } else { EmployeeToUpdate.SignUpDate = EmployeeToUpdate.SignUpDate; }
+            if (employeeDto.Salary != default) { EmployeeToUpdate.Salary = employeeDto.Salary; } else { EmployeeToUpdate.Salary = EmployeeToUpdate.Salary; }
+            if (employeeDto.WorkPosition != default) { EmployeeToUpdate.WorkPosition = employeeDto.WorkPosition; } else { EmployeeToUpdate.WorkPosition = EmployeeToUpdate.WorkPosition; }
+            if (employeeDto.EmployeeCode != default) { EmployeeToUpdate.EmployeeCode = employeeDto.EmployeeCode; } else { EmployeeToUpdate.EmployeeCode = EmployeeToUpdate.EmployeeCode; }
+            if (employeeDto.IdEmployee != default) { EmployeeToUpdate.IdEmployee = employeeDto.IdEmployee; } else { EmployeeToUpdate.IdEmployee = EmployeeToUpdate.IdEmployee; }
+            */
         }
 
 

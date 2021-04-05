@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using AutoMapper;
+using ContactInfoHandler.Application.Dto.Persons.Employees;
+using ContactInfoHandler.Dominio.Core.Persons.Employees;
 
 namespace ContactInfoHandler.Application.Core.Persons.Employees.Mapping
 {
-    interface EmployeeProfile
-    {
+
+    class EmployeeProfile : Profile
+        {
+            public EmployeeProfile()
+            {
+                CreateMap<EmployeeEntity, EmployeeDto>().ReverseMap();
+
+            }        
     }
 }

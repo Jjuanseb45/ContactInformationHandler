@@ -9,10 +9,8 @@ namespace ContactInfoHandler.Application.Dto.Persons.Providers
         public Guid IdProvider { get; set; }
         public string CompanyName { get; set; }
         public long ContactNumber { get; set; }
-
         //RELACION CON TIPO DE IDENTIFICACION
         public Guid KindOfIdentificationId { get; set; }
-        public KindOfIdentificationEntity KindOfIdentification { get; set; }
 
     }
 }

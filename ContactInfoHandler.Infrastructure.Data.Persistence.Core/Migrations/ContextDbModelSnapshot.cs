@@ -72,11 +72,14 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Migrations
                     b.Property<long>("IdNumber")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("KindOfIdentificationEntityKindOfIdentificationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("KindOfIdentificationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("KindOfPerson")
-                        .HasColumnType("int");
+                    b.Property<string>("KindOfPerson")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondLastName")
                         .HasColumnType("nvarchar(max)");
@@ -89,7 +92,7 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Migrations
 
                     b.HasKey("IdCustmer");
 
-                    b.HasIndex("KindOfIdentificationId");
+                    b.HasIndex("KindOfIdentificationEntityKindOfIdentificationId");
 
                     b.ToTable("Customers");
                 });
@@ -103,7 +106,7 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Migrations
                     b.Property<Guid>("AreaId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AreaOfWorkAreaId")
+                    b.Property<Guid?>("AreaOfWorkEntityAreaId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("DateOfBirth")
@@ -121,11 +124,14 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Migrations
                     b.Property<long>("IdNumber")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("KindOfIdentificationEntityKindOfIdentificationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("KindOfIdentificationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("KindOfPerson")
-                        .HasColumnType("int");
+                    b.Property<string>("KindOfPerson")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Salary")
                         .HasColumnType("float");
@@ -139,14 +145,11 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Migrations
                     b.Property<DateTimeOffset>("SignUpDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("WorkPosition")
-                        .HasColumnType("int");
-
                     b.HasKey("IdEmployee");
 
-                    b.HasIndex("AreaOfWorkAreaId");
+                    b.HasIndex("AreaOfWorkEntityAreaId");
 
-                    b.HasIndex("KindOfIdentificationId");
+                    b.HasIndex("KindOfIdentificationEntityKindOfIdentificationId");
 
                     b.ToTable("Employees");
                 });
@@ -176,11 +179,14 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Migrations
                     b.Property<long>("IdNumber")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("KindOfIdentificationEntityKindOfIdentificationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("KindOfIdentificationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("KindOfPerson")
-                        .HasColumnType("int");
+                    b.Property<string>("KindOfPerson")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondLastName")
                         .HasColumnType("nvarchar(max)");
@@ -193,53 +199,39 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Migrations
 
                     b.HasKey("IdProvider");
 
-                    b.HasIndex("KindOfIdentificationId");
+                    b.HasIndex("KindOfIdentificationEntityKindOfIdentificationId");
 
                     b.ToTable("Providers");
                 });
 
             modelBuilder.Entity("ContactInfoHandler.Dominio.Core.Persons.Customers.CustomerEntity", b =>
                 {
-                    b.HasOne("ContactInfoHandler.Dominio.Core.Identifications.KindOfIdentificationEntity", "KindOfIdentification")
+                    b.HasOne("ContactInfoHandler.Dominio.Core.Identifications.KindOfIdentificationEntity", null)
                         .WithMany("CustomersList")
-                        .HasForeignKey("KindOfIdentificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("KindOfIdentification");
+                        .HasForeignKey("KindOfIdentificationEntityKindOfIdentificationId");
                 });
 
             modelBuilder.Entity("ContactInfoHandler.Dominio.Core.Persons.Employees.EmployeeEntity", b =>
                 {
-                    b.HasOne("ContactInfoHandler.Dominio.Core.Areas.AreaOfWorkEntity", "AreaOfWork")
-                        .WithMany("AreaEmployees")
-                        .HasForeignKey("AreaOfWorkAreaId");
+                    b.HasOne("ContactInfoHandler.Dominio.Core.Areas.AreaOfWorkEntity", null)
+                        .WithMany("EmployeeLists")
+                        .HasForeignKey("AreaOfWorkEntityAreaId");
 
-                    b.HasOne("ContactInfoHandler.Dominio.Core.Identifications.KindOfIdentificationEntity", "KindOfIdentification")
+                    b.HasOne("ContactInfoHandler.Dominio.Core.Identifications.KindOfIdentificationEntity", null)
                         .WithMany("EmployeeEntities")
-                        .HasForeignKey("KindOfIdentificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AreaOfWork");
-
-                    b.Navigation("KindOfIdentification");
+                        .HasForeignKey("KindOfIdentificationEntityKindOfIdentificationId");
                 });
 
             modelBuilder.Entity("ContactInfoHandler.Dominio.Core.Persons.Providers.ProviderEntity", b =>
                 {
-                    b.HasOne("ContactInfoHandler.Dominio.Core.Identifications.KindOfIdentificationEntity", "KindOfIdentification")
+                    b.HasOne("ContactInfoHandler.Dominio.Core.Identifications.KindOfIdentificationEntity", null)
                         .WithMany("ProvidersList")
-                        .HasForeignKey("KindOfIdentificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("KindOfIdentification");
+                        .HasForeignKey("KindOfIdentificationEntityKindOfIdentificationId");
                 });
 
             modelBuilder.Entity("ContactInfoHandler.Dominio.Core.Areas.AreaOfWorkEntity", b =>
                 {
-                    b.Navigation("AreaEmployees");
+                    b.Navigation("EmployeeLists");
                 });
 
             modelBuilder.Entity("ContactInfoHandler.Dominio.Core.Identifications.KindOfIdentificationEntity", b =>

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace ContactInfoHandler.Dominio.Core.Areas
 {
@@ -12,12 +11,11 @@ namespace ContactInfoHandler.Dominio.Core.Areas
     {
         [Key]
         public Guid AreaId { get; set; }
-        [NotMapped]
-        public EmployeeEntity Reponsable { get; set; }
         public string AreaName { get; set; }
-        public IEnumerable<EmployeeEntity> AreaEmployees { get; set; }
 
-        //RELACION CON EL EMPLEADO REPONSABLE
+        [Required]
         public Guid ResponsableEmployeeId { get; set; }
+        public IEnumerable<EmployeeEntity> EmployeeLists { get; set; }
+
     }
 }

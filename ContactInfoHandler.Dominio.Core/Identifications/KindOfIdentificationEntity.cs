@@ -1,12 +1,10 @@
 ﻿using ContactInfoHandler.Dominio.Core.Base;
-using ContactInfoHandler.Dominio.Core.Persons;
 using ContactInfoHandler.Dominio.Core.Persons.Customers;
 using ContactInfoHandler.Dominio.Core.Persons.Employees;
 using ContactInfoHandler.Dominio.Core.Persons.Providers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace ContactInfoHandler.Dominio.Core.Identifications
 {

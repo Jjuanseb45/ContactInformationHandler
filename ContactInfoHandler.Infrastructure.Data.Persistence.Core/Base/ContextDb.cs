@@ -8,12 +8,10 @@ using ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base.Configuration
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base
 {
-    class ContextDb: DbContext, IContextDb
+    internal class ContextDb: DbContext, IContextDb
     {
         DbSettings _settings;
         public virtual DbSet<AreaOfWorkEntity> Areas { get; set; }
@@ -23,11 +21,14 @@ namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base
         public virtual DbSet<ProviderEntity> Providers { get; set; }
 
 
-        public ContextDb(IOptions<DbSettings> settings) =>
-                    _settings = settings.Value; 
+        public ContextDb(IOptions<DbSettings> settings) => _settings = settings.Value; 
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(_settings.ConnectionString);
 
+        protected internal virtual void OnModelCreating(ModelBuilder modelBuilder) 
+        {
+
+        }
 
         public void Commit() => base.SaveChanges();               
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base.Configuration
+﻿namespace ContactInfoHandler.Infrastructure.Data.Persistence.Core.Base.Configuration
 {
     public class DbSettings
     {
