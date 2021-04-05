@@ -1,5 +1,4 @@
 ﻿using ContactInfoHandler.Application.Dto.Areas;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

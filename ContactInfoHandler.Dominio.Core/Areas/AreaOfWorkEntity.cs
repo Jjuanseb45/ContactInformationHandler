@@ -3,7 +3,6 @@ using ContactInfoHandler.Dominio.Core.Persons.Employees;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContactInfoHandler.Dominio.Core.Areas
 {

@@ -1,9 +1,4 @@
-﻿using ContactInfoHandler.Application.Dto.Identifications;
-using ContactInfoHandler.Dominio.Core.Areas;
-using ContactInfoHandler.Dominio.Core.Identifications;
-using ContactInfoHandler.Dominio.Core.Persons;
-using ContactInfoHandler.Dominio.Core.Persons.Employees;
-using System;
+﻿using System;
 
 namespace ContactInfoHandler.Application.Dto.Persons.Employees
 {

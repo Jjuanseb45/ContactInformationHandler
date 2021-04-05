@@ -1,7 +1,5 @@
 ﻿using ContactInfoHandler.Application.Core.Identifications.Service;
-using ContactInfoHandler.Application.Core.Persons.Customers.Service;
 using ContactInfoHandler.Application.Dto.Identifications;
-using ContactInfoHandler.Application.Dto.Persons.Customers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

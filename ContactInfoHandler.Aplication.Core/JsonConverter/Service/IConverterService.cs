@@ -1,7 +1,5 @@
 ﻿using ContactInfoHandler.Application.Dto.Base;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ContactInfoHandler.Application.Core.JsonConverter.Service

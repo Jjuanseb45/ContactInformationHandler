@@ -242,20 +242,11 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindOfIdentificationSC = new ServiceCollection();
-            KindOfIdentificationSC.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
+         
             var provider = service.BuildServiceProvider();
-            var KoiProvider = KindOfIdentificationSC.BuildServiceProvider();
 
             var ProvicerService = provider.GetRequiredService<IProviderService>();
-            var KindOfIdProvider = KoiProvider.GetRequiredService<IKindOfIdentificationService>();
-            var koi = "Cedula";
-            var KindOfIdCedulaKoiService = await KindOfIdProvider.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
-
+           
             var AddedProvider = new ProviderDto
             {
                 IdProvider = ProviderIdentification,
@@ -268,7 +259,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedulaKoiService.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Juridica",
             };
 
@@ -288,27 +279,18 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindOfIdserviceCollector = new ServiceCollection();
-            KindOfIdserviceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
+            var KindOfIdentificationId = Guid.NewGuid();
+       
             var provider = service.BuildServiceProvider();
-            var KindOfIdProvider = KindOfIdserviceCollector.BuildServiceProvider();
 
             var ProvicerService = provider.GetRequiredService<IProviderService>();
-            var kindOfIdService = KindOfIdProvider.GetRequiredService<IKindOfIdentificationService>();
-
-            var koi = "Cedula";
-            var CedulaEntity = await kindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
-
+            
             var AddedProvider = new ProviderDto
             {
                 KindOfPerson="Natural",
                 CompanyName = "Custer",
                 IdNumber = IdNumber,
-                KindOfIdentificationId = CedulaEntity.KindOfIdentificationId,
+                KindOfIdentificationId = KindOfIdentificationId,
                 IdProvider = Guid.NewGuid(),
                 DateOfBirth = DateTimeOffset.Now,
                 SignUpDate = DateTimeOffset.Now
@@ -320,7 +302,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 IdNumber = IdNumber,
                 FirstLastName = "Sal",
                 CompanyName = "Custer",
-                KindOfIdentificationId = CedulaEntity.KindOfIdentificationId,
+                KindOfIdentificationId = KindOfIdentificationId,
                 DateOfBirth = DateTimeOffset.Now,
                 SignUpDate = DateTimeOffset.Now,
                 IdProvider = Guid.NewGuid(),
@@ -341,21 +323,10 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindofIdServiceCollector = new ServiceCollection();
-            KindofIdServiceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
 
             var Employeeprovider = service.BuildServiceProvider();
-            var kindofidprovider = KindofIdServiceCollector.BuildServiceProvider();
 
-            var ProviderService = Employeeprovider.GetRequiredService<IProviderService>();
-            var KindOfIdService = kindofidprovider.GetRequiredService<IKindOfIdentificationService>();
-
-            string koi = "Cedula";
-            var KindOfIdCedula = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
+            var ProviderService = Employeeprovider.GetRequiredService<IProviderService>();          
 
             var AddedProvider = new ProviderDto
             {
@@ -368,12 +339,9 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedula.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural",
-            };
-
-            string koiP = "Pasaporte";
-            var KindOfIdPasaporte = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = koiP }).ConfigureAwait(false);
+            };           
 
             var response = await ProviderService.InsertProvider(AddedProvider).ConfigureAwait(false);
 
@@ -388,7 +356,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdPasaporte.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural"
             }));
 
@@ -527,19 +495,12 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindofIdsvc = new ServiceCollection();
-            KindofIdsvc.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
+
 
             var provider = service.BuildServiceProvider();
-            var KoiProvider = KindofIdsvc.BuildServiceProvider();
 
             var ProvicerService = provider.GetRequiredService<IProviderService>();
-            var koiService = KoiProvider.GetRequiredService<IKindOfIdentificationService>();
 
-            var KindOfIdCedulaKoiService = koiService.GetOne(new KindOfIdentificationDto { IdentificationName = "Cedula" }).Result;
 
             var AddedProvider = new ProviderDto
             {
@@ -553,7 +514,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedulaKoiService.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Juridica",
             };
 
@@ -611,21 +572,10 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var serviceKindOfId = new ServiceCollection();
-            serviceKindOfId.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
 
             var provider = service.BuildServiceProvider();
-            var KoiProvider = serviceKindOfId.BuildServiceProvider();
 
-            var providerService = provider.GetRequiredService<IProviderService>();
-            var KindOfIdService = KoiProvider.GetRequiredService<IKindOfIdentificationService>();
-
-            var KindOfId = "Cedula";
-            var Cedula = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = KindOfId });
+            var providerService = provider.GetRequiredService<IProviderService>();         
 
             var IdProviderToEdit = Guid.NewGuid();
 
@@ -642,7 +592,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Persons.ProviderServ
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = Cedula.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
             };
 
             await providerService.InsertProvider(AddedProvider);

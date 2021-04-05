@@ -1,5 +1,4 @@
 ﻿using ContactInfoHandler.Application.Dto.Persons.Providers;
-using System;
 using System.Threading.Tasks;
 
 namespace ContactInfoHandler.Application.Core.Persons.Providers.Service

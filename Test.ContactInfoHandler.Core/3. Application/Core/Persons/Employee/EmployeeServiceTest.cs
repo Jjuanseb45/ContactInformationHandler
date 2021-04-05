@@ -330,26 +330,17 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
         public async Task FailJuridicEmployee()
         {
             var service = new ServiceCollection();
-            var KoiserviceCollector = new ServiceCollection();
 
             service.ConfigurePersons(new DbSettings
             {
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            KoiserviceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
             var provider = service.BuildServiceProvider();
-            var koiProvider = KoiserviceCollector.BuildServiceProvider();
 
             var employeeService = provider.GetRequiredService<IEmployeeService>();
-            var KoiService = koiProvider.GetRequiredService<IKindOfIdentificationService>();
 
             string koi = "Cedula";
-            var KindOfIdCedulaKoiService = await KoiService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
 
             await Assert.ThrowsAsync<JuridicEmployeeException>(() => employeeService.InsertEmployee(new EmployeeDto
             {
@@ -362,7 +353,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedulaKoiService.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Juridica",
             }));
 
@@ -373,26 +364,15 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
         public async Task FailInsertNullArea()
         {
             var service = new ServiceCollection();
-            var KoiserviceCollector = new ServiceCollection();
 
             service.ConfigurePersons(new DbSettings
             {
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
-
-            KoiserviceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
+    
             var provider = service.BuildServiceProvider();
-            var koiProvider = KoiserviceCollector.BuildServiceProvider();
 
             var employeeService = provider.GetRequiredService<IEmployeeService>();
-            var KoiService = koiProvider.GetRequiredService<IKindOfIdentificationService>();
-
-            string koi = "Cedula";
-            var KindOfIdCedulaKoiService = await KoiService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
 
             await Assert.ThrowsAsync<NoAreaEspecifiedException>(() => employeeService.InsertEmployee(new EmployeeDto
             {
@@ -404,7 +384,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedulaKoiService.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural",
                 EmployeeCode = Guid.NewGuid()
             }));
@@ -416,26 +396,18 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
         public async Task FailInsertNullEmployeeCode()
         {
             var service = new ServiceCollection();
-            var KoiserviceCollector = new ServiceCollection();
 
             service.ConfigurePersons(new DbSettings
             {
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            KoiserviceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
 
             var provider = service.BuildServiceProvider();
-            var koiProvider = KoiserviceCollector.BuildServiceProvider();
 
             var employeeService = provider.GetRequiredService<IEmployeeService>();
-            var KoiService = koiProvider.GetRequiredService<IKindOfIdentificationService>();
 
             string koi = "Cedula";
-            var KindOfIdCedulaKoiService = await KoiService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
 
             await Assert.ThrowsAsync<NoEspecifiedEmployeeCodeException>(() => employeeService.InsertEmployee(new EmployeeDto
             {
@@ -447,7 +419,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedulaKoiService.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural",
             }));
         }
@@ -457,7 +429,6 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
         public async Task SuccesfullInsertEmployee()
         {
             var service = new ServiceCollection();
-            var KoiserviceCollector = new ServiceCollection();
             var AreaServiceCollector = new ServiceCollection();
 
             service.ConfigurePersons(new DbSettings
@@ -465,10 +436,6 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            KoiserviceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
 
             AreaServiceCollector.ConfigureAreaOfWork(new DbSettings
             {
@@ -477,15 +444,11 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
 
 
             var provider = service.BuildServiceProvider();
-            var koiProvider = KoiserviceCollector.BuildServiceProvider();
             var areaOfWorkProvider = AreaServiceCollector.BuildServiceProvider();
 
             var employeeService = provider.GetRequiredService<IEmployeeService>();
-            var KoiService = koiProvider.GetRequiredService<IKindOfIdentificationService>();
             var AreaOfWorkService = areaOfWorkProvider.GetRequiredService<IAreaOfWorkService>();
-
-            string koi = "Cedula";
-            var KindOfIdCedulaKoiService = await KoiService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
+          
 
             var AddedArea = new AreaOfWorkDto { AreaName = "Talento Humano", AreaId = Guid.NewGuid(), ResponsableEmployeeId = Guid.NewGuid() };
 
@@ -506,7 +469,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedulaKoiService.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural",
             };
 
@@ -534,15 +497,9 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-
             var Employeeprovider = service.BuildServiceProvider();
-            var kindofidprovider = KindofIdServiceCollector.BuildServiceProvider();
 
             var EmployeeService = Employeeprovider.GetRequiredService<IEmployeeService>();
-            var KindOfIdService = kindofidprovider.GetRequiredService<IKindOfIdentificationService>();
-
-            string koi = "Cedula";
-            var KindOfIdCedula = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
 
             var employeeCode = Guid.NewGuid();
 
@@ -557,7 +514,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedula.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural",
                 EmployeeCode = employeeCode
             };
@@ -595,21 +552,12 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindofIdServiceCollector = new ServiceCollection();
-            KindofIdServiceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
 
             var Employeeprovider = service.BuildServiceProvider();
-            var kindofidprovider = KindofIdServiceCollector.BuildServiceProvider();
 
             var EmployeeService = Employeeprovider.GetRequiredService<IEmployeeService>();
-            var KindOfIdService = kindofidprovider.GetRequiredService<IKindOfIdentificationService>();
 
-            string koi = "Cedula";
-            var KindOfIdCedula = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
+            var KindOfIdentificationId = Guid.NewGuid();
 
             var AddedEmployee = new EmployeeDto
             {
@@ -622,7 +570,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedula.KindOfIdentificationId,
+                KindOfIdentificationId = KindOfIdentificationId,
                 KindOfPerson = "Natural",
                 EmployeeCode = Guid.NewGuid(),
             };
@@ -640,7 +588,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedula.KindOfIdentificationId,
+                KindOfIdentificationId = KindOfIdentificationId,
                 KindOfPerson = "Natural",
                 EmployeeCode = Guid.NewGuid(),
             }));
@@ -660,25 +608,11 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindofIdServiceCollector = new ServiceCollection();
-            KindofIdServiceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
-
             var Employeeprovider = service.BuildServiceProvider();
-            var kindofidprovider = KindofIdServiceCollector.BuildServiceProvider();
 
             var EmployeeService = Employeeprovider.GetRequiredService<IEmployeeService>();
-            var KindOfIdService = kindofidprovider.GetRequiredService<IKindOfIdentificationService>();
 
-           
-            
-
-            string koi = "Cedula";
-            var KindOfIdCedula = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
-
+                      
             var AddedEmployee = new EmployeeDto
             {
                 AreaId = Guid.NewGuid(),
@@ -690,13 +624,10 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdCedula.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural",
                 EmployeeCode = Guid.NewGuid()
-            };
-
-            string koiP = "Pasaporte";
-            var KindOfIdPasaporte = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = koiP }).ConfigureAwait(false);
+            };          
 
             var response = await EmployeeService.InsertEmployee(AddedEmployee).ConfigureAwait(false);
 
@@ -711,7 +642,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = KindOfIdPasaporte.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural",
                 EmployeeCode = Guid.NewGuid(),
             }));
@@ -797,22 +728,9 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindOfIdServiceCollector = new ServiceCollection();
-            KindOfIdServiceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
-
             var provider = service.BuildServiceProvider();
-            var KindOfIdentificationProvider = KindOfIdServiceCollector.BuildServiceProvider();
 
             var employeeService = provider.GetRequiredService<IEmployeeService>();
-            var KindOfIdentificationService = KindOfIdentificationProvider.GetRequiredService<IKindOfIdentificationService>();
-
-
-            string koi = "Nit";
-            var KindOfIdNit = await KindOfIdentificationService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
 
 
             await Assert.ThrowsAsync<DateOfBirthMissingException>(() => employeeService.InsertEmployee(new EmployeeDto
@@ -827,7 +745,6 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 IdNumber = 1061827731,
                 KindOfPerson = "Natural",
-                KindOfIdentificationId = KindOfIdNit.KindOfIdentificationId
             }));
         }
 
@@ -841,22 +758,10 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var KindOfIdServiceCollector = new ServiceCollection();
-            KindOfIdServiceCollector.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
 
             var provider = service.BuildServiceProvider();
-            var KindOfIdentificationProvider = KindOfIdServiceCollector.BuildServiceProvider();
 
             var employeeService = provider.GetRequiredService<IEmployeeService>();
-            var KindOfIdentificationService = KindOfIdentificationProvider.GetRequiredService<IKindOfIdentificationService>();
-
-
-            string koi = "Nit";
-            var KindOfIdNit = await KindOfIdentificationService.GetOne(new KindOfIdentificationDto { IdentificationName = koi }).ConfigureAwait(false);
 
 
             await Assert.ThrowsAsync<SignUpDateMissingException>(() => employeeService.InsertEmployee(new EmployeeDto
@@ -871,7 +776,6 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 IdNumber = 1061827731,
                 KindOfPerson = "Natural",
-                KindOfIdentificationId = KindOfIdNit.KindOfIdentificationId
             }));
         }
 
@@ -884,34 +788,21 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
         public async Task SuccesfullDeleteEmployee()
         {
             var service = new ServiceCollection();
-            var kindOfIdService = new ServiceCollection();
 
             service.ConfigurePersons(new DbSettings
             {
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            kindOfIdService.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
-
             var provider = service.BuildServiceProvider();
-            var providerkindOfId = kindOfIdService.BuildServiceProvider();
 
             var employeeService = provider.GetRequiredService<IEmployeeService>();
-            var KindOfIdService = providerkindOfId.GetRequiredService<IKindOfIdentificationService>();
-
-            var kindOfId = "Cedula";
-            var KindOfIdEntity = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = kindOfId });
-
+        
             var AddedEmployee = new EmployeeDto
             {
                 EmployeeCode = Guid.NewGuid(),
                 KindOfPerson = "Natural",
                 AreaId = Guid.NewGuid(),
-                KindOfIdentificationId = KindOfIdEntity.KindOfIdentificationId,
                 DateOfBirth = DateTimeOffset.Now,
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = 5418498,
@@ -954,7 +845,6 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
 
         [Fact]
         [IntegrationTest]
-
         public async Task SuccesfullEmployeeUpdate() 
         {
             var service = new ServiceCollection();
@@ -963,21 +853,9 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
             });
 
-            var serviceKindOfId = new ServiceCollection();
-            serviceKindOfId.ConfigureKindOfIdentification(new DbSettings
-            {
-                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
-            });
-
-
             var provider = service.BuildServiceProvider();
-            var KoiProvider = serviceKindOfId.BuildServiceProvider();
 
-            var EmployeeService = provider.GetRequiredService<IEmployeeService>();
-            var KindOfIdService = KoiProvider.GetRequiredService<IKindOfIdentificationService>();
-
-            var KindOfId = "Cedula";
-            var Cedula = await KindOfIdService.GetOne(new KindOfIdentificationDto { IdentificationName = KindOfId });
+            var EmployeeService = provider.GetRequiredService<IEmployeeService>();           
 
             var IdEmployeeToEdit = Guid.NewGuid();
 
@@ -994,7 +872,7 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.Employee
                 SecondLastName = "Lopez",
                 SignUpDate = DateTimeOffset.Now,
                 IdNumber = IdNumber,
-                KindOfIdentificationId = Cedula.KindOfIdentificationId,
+                KindOfIdentificationId = Guid.NewGuid(),
                 KindOfPerson = "Natural"
             };
 

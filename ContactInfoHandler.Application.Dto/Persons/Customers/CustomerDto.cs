@@ -1,6 +1,4 @@
-﻿using ContactInfoHandler.Application.Dto.Identifications;
-using ContactInfoHandler.Dominio.Core.Identifications;
-using System;
+﻿using System;
 
 namespace ContactInfoHandler.Application.Dto.Persons.Customers
 {

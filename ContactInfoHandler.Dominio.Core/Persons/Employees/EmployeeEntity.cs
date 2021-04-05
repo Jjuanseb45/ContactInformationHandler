@@ -1,6 +1,4 @@
-﻿using ContactInfoHandler.Dominio.Core.Areas;
-using ContactInfoHandler.Dominio.Core.Identifications;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ContactInfoHandler.Dominio.Core.Persons.Employees

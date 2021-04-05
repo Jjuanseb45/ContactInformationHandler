@@ -1,10 +1,7 @@
-﻿using ContactInfoHandler.Application.Core.Persons.Customers.Service;
-using ContactInfoHandler.Application.Core.Persons.Providers.Service;
-using ContactInfoHandler.Application.Dto.Persons.Customers;
+﻿using ContactInfoHandler.Application.Core.Persons.Providers.Service;
 using ContactInfoHandler.Application.Dto.Persons.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ContactInfoHandler.WebApi.Controllers

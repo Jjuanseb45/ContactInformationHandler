@@ -1,5 +1,4 @@
 ﻿using ContactInfoHandler.Application.Dto.Persons.Customers;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

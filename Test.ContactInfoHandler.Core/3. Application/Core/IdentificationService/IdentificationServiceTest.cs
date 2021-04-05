@@ -222,7 +222,39 @@ namespace Test.ContactInfoHandler.Core._3._Application.Core.IdentificationServic
             }));
         }
         #endregion
+
         #region InsertTests
+
+        [Fact]
+        [IntegrationTest]
+        public async Task AssureCedulaPasaporteNit() 
+        {
+            var service = new ServiceCollection();
+            service.ConfigureKindOfIdentification(new DbSettings
+            {
+                ConnectionString = "Server = DESKTOP-QHO5U57\\MYSQLFORBLAZOR; Database=PersonsContactInfo;Trusted_Connection=True;"
+            });
+            var provider = service.BuildServiceProvider();
+            var KindOfIdService = provider.GetRequiredService<IKindOfIdentificationService>();
+
+            if (!KindOfIdService.VerifyExisting(new KindOfIdentificationDto { IdentificationName = "Cedula" }).Result) 
+            {
+                await KindOfIdService.InsertKindOfId(new KindOfIdentificationDto { IdentificationName = "Cedula", KindOfIdentificationId = Guid.NewGuid() });
+            }
+            if (!KindOfIdService.VerifyExisting(new KindOfIdentificationDto { IdentificationName = "Pasaporte" }).Result) 
+            {
+                await KindOfIdService.InsertKindOfId(new KindOfIdentificationDto { IdentificationName = "Pasaporte", KindOfIdentificationId = Guid.NewGuid() });
+            }
+            if (!KindOfIdService.VerifyExisting(new KindOfIdentificationDto { IdentificationName = "Nit" }).Result) 
+            {
+                await KindOfIdService.InsertKindOfId(new KindOfIdentificationDto { IdentificationName = "Nit", KindOfIdentificationId = Guid.NewGuid() });
+            }
+
+            Assert.True(KindOfIdService.VerifyExisting(new KindOfIdentificationDto { IdentificationName = "Cedula" }).Result);
+            Assert.True(KindOfIdService.VerifyExisting(new KindOfIdentificationDto { IdentificationName = "Pasaporte" }).Result);
+            Assert.True(KindOfIdService.VerifyExisting(new KindOfIdentificationDto { IdentificationName = "Nit" }).Result);
+
+        }
 
         [Fact]
         [IntegrationTest]
