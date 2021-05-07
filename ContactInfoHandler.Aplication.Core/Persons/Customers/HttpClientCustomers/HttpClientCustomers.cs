@@ -8,26 +8,21 @@ using Microsoft.Extensions.Options;
 
 namespace ContactInfoHandler.Application.Core.Persons.Customers.HttpClientCustomers
 {
-    public class HttpClientCustomers: HttpClientGenericBase<CustomerDto>, IHttpClientCustomers
+    public class HttpClientCustomers : HttpClientGenericBase<CustomerDto>, IHttpClientCustomers
     {
-
-        public HttpClientCustomers( HttpClient cliente, IOptions<HttpClientSettings> settings): base(cliente, settings)
+        public HttpClientCustomers(HttpClient cliente, IOptions<HttpClientSettings> settings) : base(cliente, settings)
         {
         }
-        
+
         public override string Controller
         {
             get => "/Customer";
         }
 
         public async Task<IEnumerable<CustomerDto>> GetAll()
-        {
-            return await Get("/GetCustomers").ConfigureAwait(false);
-        }
+            => await Get("/GetCustomers").ConfigureAwait(false);
 
         public async Task<bool> Put(CustomerDto customer)
-        {
-            return await Put(customer, "/DeleteCustomers");
-        }
+            => await Put(customer, "/DeleteCustomers").ConfigureAwait(false);
     }
 }
