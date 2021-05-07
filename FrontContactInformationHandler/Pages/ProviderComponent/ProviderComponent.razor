@@ -1,0 +1,21 @@
+@using ContactInfoHandler.Application.Core.Persons.Providers.HttpClientProviders
+@using ContactInfoHandler.Application.Dto.Areas
+<h3>ProviderComponent</h3>
+
+@code {
+
+    [Inject]
+    public HttpClientProviders _client { get; set; }
+    public IEnumerable<AreaOfWorkDto> Areas { get; set; } = new List<AreaOfWorkDto>();
+
+    protected override async void OnInitialized()
+    {
+        var response = await _client.GetAll().ConfigureAwait(false);
+        if (response.ToArray().Length <= 0)
+        {
+            Areas = response;
+            await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+        }
+        base.OnInitialized();
+    }
+}
