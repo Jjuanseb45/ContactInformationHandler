@@ -10,7 +10,6 @@ namespace ContactInfoHandler.Application.Core.Areas.Mapping
         public AreaOfWorkProfile()
         {
             CreateMap<AreaOfWorkEntity, AreaOfWorkDto>().ReverseMap();
-
         }
 
     }

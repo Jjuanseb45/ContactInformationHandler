@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using ContactInfoHandler.Infrastructure.Transversal.Configurator;
 
 namespace ContactInfoHandler.Infrastructure.Transversal.Configurator
 {

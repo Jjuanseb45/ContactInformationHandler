@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ContactInfoHandler.Infrastructure.Transversal.Configurator
 {
+    public  class HttpClientSettings
     {
         
         public string ServiceProtocol { get; set; }
