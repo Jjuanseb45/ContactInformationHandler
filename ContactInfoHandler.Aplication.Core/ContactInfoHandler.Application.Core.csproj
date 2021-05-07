@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ContactInfoHandler.Application.Dto\ContactInfoHandler.Application.Dto.csproj" />
     <ProjectReference Include="..\ContactInfoHandler.Infrastructure.Data.Persistence.Core\ContactInfoHandler.Infrastructure.Data.Persistence.Core.csproj" />
+    <ProjectReference Include="..\ContactInfoHandler.Infrastructure.Transversal\ContactInfoHandler.Infrastructure.Transversal.csproj" />
   </ItemGroup>
 
 </Project>
