@@ -1,4 +1,16 @@
+@using ContactInfoHandler.Application.Core.Areas.HttpClientAreas
+@using ContactInfoHandler.Application.Dto.Areas
 <h3>CreateAreaComponent</h3>
 
 @code {
+    [Inject]
+    HttpClientArea _clientArea { get; set; }
+
+    List<AreaOfWorkDto> areasOnDataBase = new List<AreaOfWorkDto>();
+
+    protected override void OnInitialized()
+    {
+        _clientArea.GetAll();
+        base.OnInitialized();
+    }
 }
